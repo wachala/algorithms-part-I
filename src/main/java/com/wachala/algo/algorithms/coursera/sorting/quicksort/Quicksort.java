@@ -10,7 +10,7 @@ public class Quicksort {
         sort(array, 0, array.length - 1);
     }
 
-    private static int partition(Comparable[] array, int start, int end) {
+    protected static int partition(Comparable[] array, int start, int end) {
         int i = start;
         int j = end;
 
