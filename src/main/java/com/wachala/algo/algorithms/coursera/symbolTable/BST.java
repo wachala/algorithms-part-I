@@ -92,6 +92,48 @@ public class BST<Key extends Comparable<Key>, Value> implements SymbolTable<Key,
         return new Entry<>(node.getKey(), node.getValue());
     }
 
+    @Override
+    public void delete(Key key) {
+        root = delete(key, root);
+    }
+
+    private BSTNode<Key, Value> delete(Key key, BSTNode<Key, Value> root) {
+        if (root == null) return null;
+
+        int result = root.getKey().compareTo(key);
+
+        if (result > 0)
+            root.setLeft(delete(key, root.getLeft()));
+        else if (result < 0)
+            root.setRight(delete(key, root.getRight()));
+        else {
+            if (root.getLeft() == null) return root.getRight();
+            if (root.getRight() == null) return root.getLeft();
+
+            BSTNode<Key, Value> min = min(root);
+            min.setRight(root.getRight());
+            min.setLeft(root.getLeft());
+
+            root = min;
+        }
+
+        int newRank = 1 + size(root.getLeft()) + size(root.getRight());
+        root.setRank(newRank);
+        return root;
+    }
+
+    @Override
+    public void deleteMin() {
+        if (root == null) return;
+        root = deleteMin(root);
+    }
+
+    @Override
+    public void deleteMax() {
+        if (root == null) return;
+        root = deleteMax(root);
+    }
+
     private BSTNode<Key, Value> put(BSTNode<Key, Value> root, Key key, Value value) {
         if (root == null) {
             BSTNode<Key, Value> node = new BSTNode<>(key, value);
@@ -156,6 +198,35 @@ public class BST<Key extends Comparable<Key>, Value> implements SymbolTable<Key,
         queue.offer(entry);
 
         inorderTraversalEntries(root.getRight(), queue);
+    }
+
+    private BSTNode<Key, Value> deleteMin(BSTNode<Key, Value> root) {
+        if (root.getLeft() == null) return root.getRight();
+
+        deleteMin(root.getLeft());
+        int newRank = 1 + size(root.getLeft()) + size(root.getRight());
+        root.setRank(newRank);
+
+        return root;
+    }
+
+    private BSTNode<Key, Value> deleteMax(BSTNode<Key, Value> root) {
+        if (root.getRight() == null) return root.getLeft();
+
+        deleteMax(root.getRight());
+        int newRank = 1 + size(root.getLeft()) + size(root.getRight());
+        root.setRank(newRank);
+
+        return root;
+    }
+
+    private BSTNode<Key, Value> min(BSTNode<Key, Value> root) {
+        if (root == null) return null;
+
+        BSTNode<Key, Value> minNode = root;
+        while (minNode != null && minNode.getLeft() != null) minNode = minNode.getLeft();
+
+        return minNode;
     }
 
 }

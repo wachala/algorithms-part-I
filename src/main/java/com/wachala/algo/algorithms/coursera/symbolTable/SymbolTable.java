@@ -25,4 +25,10 @@ public interface SymbolTable<Key extends Comparable<Key>, Value> {
     Entry<Key, Value> minEntry();
 
     Entry<Key, Value> maxEntry();
+
+    void delete(Key key);
+
+    void deleteMin();
+
+    void deleteMax();
 }
