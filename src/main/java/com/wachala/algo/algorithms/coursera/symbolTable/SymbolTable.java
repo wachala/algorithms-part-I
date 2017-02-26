@@ -16,4 +16,13 @@ public interface SymbolTable<Key extends Comparable<Key>, Value> {
 
     int size();
 
+    Value get(Key key);
+
+    Key minKey();
+
+    Key maxKey();
+
+    Entry<Key, Value> minEntry();
+
+    Entry<Key, Value> maxEntry();
 }

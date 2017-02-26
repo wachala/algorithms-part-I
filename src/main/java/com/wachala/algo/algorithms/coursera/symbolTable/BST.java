@@ -9,29 +9,12 @@ import java.util.Queue;
 public class BST<Key extends Comparable<Key>, Value> implements SymbolTable<Key, Value> {
     private BSTNode<Key, Value> root;
 
+    @Override
     public void put(Key key, Value value) {
         root = put(root, key, value);
     }
 
-    private BSTNode<Key, Value> put(BSTNode<Key, Value> root, Key key, Value value) {
-        if (root == null)
-            return new BSTNode<>(key, value);
-
-        int result = root.getKey().compareTo(key);
-
-        if (result > 0)
-            root.setLeft(put(root.getLeft(), key, value));
-        else if (result < 0)
-            root.setRight(put(root.getRight(), key, value));
-        else
-            root.setValue(value);
-
-        int rank = 1 + size(root.getLeft()) + size(root.getRight());
-        root.setRank(rank);
-
-        return root;
-    }
-
+    @Override
     public Iterable<Key> keys() {
         Queue<Key> keys = new LinkedList<>();
         inorderTraversalKeys(root, keys);
@@ -63,6 +46,72 @@ public class BST<Key extends Comparable<Key>, Value> implements SymbolTable<Key,
     @Override
     public int size() {
         return root != null ? size(root) : 0;
+    }
+
+    @Override
+    public Value get(Key key) {
+        if (root == null) return null;
+        BSTNode<Key, Value> node = root;
+
+        while (node != null && !node.getKey().equals(key)) {
+            int result = node.getKey().compareTo(key);
+            if (result > 0) node = node.getLeft();
+            else node = node.getRight();
+        }
+
+        return node == null ? null : node.getValue();
+    }
+
+    @Override
+    public Key minKey() {
+        return minEntry().getKey();
+    }
+
+    @Override
+    public Key maxKey() {
+        return maxEntry().getKey();
+    }
+
+    @Override
+    public Entry<Key, Value> minEntry() {
+        if (root == null) return null;
+        BSTNode<Key, Value> node = root;
+
+        while (node.getLeft() != null) node = node.getLeft();
+
+        return new Entry<>(node.getKey(), node.getValue());
+    }
+
+    @Override
+    public Entry<Key, Value> maxEntry() {
+        if (root == null) return null;
+        BSTNode<Key, Value> node = root;
+
+        while (node.getRight() != null) node = node.getRight();
+
+        return new Entry<>(node.getKey(), node.getValue());
+    }
+
+    private BSTNode<Key, Value> put(BSTNode<Key, Value> root, Key key, Value value) {
+        if (root == null) {
+            BSTNode<Key, Value> node = new BSTNode<>(key, value);
+            node.setRank(1);
+            return node;
+        }
+
+        int result = root.getKey().compareTo(key);
+
+        if (result > 0)
+            root.setLeft(put(root.getLeft(), key, value));
+        else if (result < 0)
+            root.setRight(put(root.getRight(), key, value));
+        else
+            root.setValue(value);
+
+        int rank = 1 + size(root.getLeft()) + size(root.getRight());
+        root.setRank(rank);
+
+        return root;
     }
 
     private int rank(Key key, BSTNode<Key, Value> root) {
